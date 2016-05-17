@@ -24,6 +24,9 @@ Properly configuring everything ended at about 4:00pm. From there, I downloaded 
   
 ### Bare Bones Client
   * slot-machine.php generates a random entry for database id 1 and POSTS it to the server. It displays the parameters it sends and the responses it receives.
+  * multiple refreshes of the client roll random results for the betting and the winning, so you will see the database reflecting the wins and losses.
+  * Since this was a supplement to the assignment for testing, it is only a generator. The next steps would be to add a login page, user creation and form fields to play with differing reults.
+  
  
   
 
