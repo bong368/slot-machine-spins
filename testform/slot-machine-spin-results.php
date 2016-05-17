@@ -15,7 +15,7 @@ if ($con==0) {
 }
 
 // process client request - make sure spinData is valid. This is a future obfuscated item.
-//
+// the idea is to obfuscate everything in one parameter.
 if (!empty($_POST['spindata'])) {
     $spinData = $_POST['spindata'];
     $parsedData = validateSpinData($spinData,false);
@@ -53,6 +53,7 @@ else {
 }
 
 /**
+ * the validation stub. This can be expanded on for telematics and analytics when errors crop up.
  * @param $spinData
  * @param $showDebug
  * @return mixed
@@ -66,6 +67,9 @@ function validateSpinData($spinData,$showDebug) {
 }
 
 /**
+ * The second major piece. The trivial validation is complete. Now access the Database to verify the user, the password and
+ * the bank account. If any of these fail, the method exits. Otherwise the database is updated and the final outputs are set for
+ * placement in the reply
  * @param $newData
  * @param $showDebug
  * @return mixed
@@ -89,6 +93,7 @@ function addSpinToDatabase($newData,$showDebug) {
         return $newData;
     }
 
+    // obtaining the data so it can be updated. 
     $row = $result->fetch_assoc();
     if ($row===null) {
         $newData['invalid'] = true;
@@ -96,20 +101,26 @@ function addSpinToDatabase($newData,$showDebug) {
         return $newData;
     }
 
+    // this is the only place the validation can be checked in this implementation. Ideally, an OAuth token would be used for
+    // the session an this would be moved to another area.
     if (!passwordChecksOut($newData,$row['password_hashed'],$showDebug)) {
         $newData['invalid'] = true;
         array_push($newData['error'],'password incorrect');
         return $newData;
     }
 
+    // keep track of the last spin date. This is a guess to simplify some coding. The actual column in the DB updates the last
+    // update time whenever the row is updated, so this only provides an estimate for the 'firstSpinDate' field.
     $row['lastSpinDate'] = $spinDate;
 
     $updates = '';
     $firstSpinDate = $row['firstSpinDate'];
-    if ($firstSpinDate === null) {
+    if ($firstSpinDate === null) { // if this is the first time, update the firstSpinDate, otherwise skip.
         $firstSpinDate = $spinDate;
         $updates = $updates . "firstSpinDate='$firstSpinDate',";
     }
+
+    // getting ready to refresh the DB with the updated values.    
     $lifetime_spins = $row['lifetime_spins'] + 1;
     $total_coins_won = $row['total_coins_won']+$won;
     $total_coins_bet = $row['total_coins_bet']+$bet;
@@ -124,6 +135,7 @@ function addSpinToDatabase($newData,$showDebug) {
         return $newData;
     }
 
+    // make sure all the data is part of the optional firstSpin a and the mandatory items.
     $updates = $updates .
         "lifetime_spins=$lifetime_spins," .
         "total_coins_won=$total_coins_won," .
@@ -139,6 +151,7 @@ function addSpinToDatabase($newData,$showDebug) {
         return $newData;
     }
 
+    // all this is prep for the reply. Since we have the DB data, might as well set it up here.
     $newData['name'] = $row['given_name'] . " " . $row['surname'];
     $newData['lifetimeSpins'] = $lifetime_spins;
     $newData['lifetimeAverageReturn'] = (($total_coins_won>=$total_coins_bet)?number_format($total_coins_won/$total_coins_bet,3):0);
@@ -147,6 +160,7 @@ function addSpinToDatabase($newData,$showDebug) {
 }
 
 /**
+ * This is the password checker. Here is where a more robust salted hash mechanism would be developed.
  * @param $newData
  * @param $hashedPwd
  * @param $showDebug
@@ -157,6 +171,8 @@ function passwordChecksOut($newData,$hashedPwd,$showDebug) {
 }
 
 /**
+ * SQL has requirements on how text is used in queries and how it is stored. This method (when active) 
+ * will ensure that HTML does not cause issues.
  * @param $str
  * @return mixed
  */
@@ -167,12 +183,13 @@ function makeDataSqlHappy($str) {
 
 /**
  * responsible to unpack the spinData item and parse it to be
- * sure all the parts are with it.
+ * sure all the parts are with it. To make forms show ALL the issues at once,
+ * the reply has an array of errors. 
  * looking for
- *      passwordHash,
- *      coinsWon,
- *      coinsBet,
- *      playerId.
+ *      hash,
+ *      won,
+ *      bet,
+ *      id.
  * @param $spinData
  * @param $showDebug
  * @return mixed
@@ -187,6 +204,7 @@ function decryptSpinData($spinData,$showDebug) {
         return $newData;
     }
 
+    // split up the single (multiplexing parameter) into 8 elements. stitch them together.
     $newData = array();
     $x = 0;
     while ($x < 8) {
@@ -306,6 +324,9 @@ function respondAsJson($status, $status_message, $data) {
     echo $json_response;
 }
 
+/**
+ * This method makes sure the status_message is NOT an array of strings
+ */
 function flattenArray($data) {
     if (is_array($data)) {
         $str = '';
@@ -318,6 +339,7 @@ function flattenArray($data) {
 }
 
 /**
+ * Generate the final output.
  * @param $parsedData
  * @return array
  */
