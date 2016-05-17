@@ -14,7 +14,7 @@ if ($con==0) {
     $con = mysqli_connect('p:localhost','root','samwise27908','spintestDB') or die("DB Connection Failed");
 }
 
-// process client request - make sure spinData is valid. This is a encrypted item.
+// process client request - make sure spinData is valid. This is a future obfuscated item.
 //
 if (!empty($_POST['spindata'])) {
     $spinData = $_POST['spindata'];
