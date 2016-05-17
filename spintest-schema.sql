@@ -41,8 +41,8 @@ CREATE TABLE `users` (
   UNIQUE KEY `userId_UNIQUE` (`player_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;  
   
-INSERT INTO `spintestdb`.`users` (`player_id`, `given_name`, `surname`, `lifetime_spins`, `current_coin_balance`, `total_coins_bet`, `total_coins_won`, `password_hashed`, `hash_salt_value`, `isDeleted`) VALUES ('1', 'Steve', 'Muchow', '0', '0', '0', '0', 'd0bc463c7973415cb0a1ba98a53ea4e6','STEVEMUCHOW1', '0');
-INSERT INTO `spintestdb`.`users` (`player_id`, `given_name`, `surname`, `lifetime_spins`, `current_coin_balance`, `total_coins_bet`, `total_coins_won`, `hash_salt_value`, `isDeleted`) VALUES ('2', 'Dawn', 'Efaw', '0', '0', '0', '0', 'STEVEMUCHOW1', '0');
+INSERT INTO `spintestdb`.`users` (`player_id`, `given_name`, `surname`, `lifetime_spins`, `current_coin_balance`, `total_coins_bet`, `total_coins_won`, `password_hashed`, `hash_salt_value`, `isDeleted`) VALUES ('1', 'Steve', 'Muchow', '0', '200', '0', '0', 'd0bc463c7973415cb0a1ba98a53ea4e6','STEVEMUCHOW1', '0');
+INSERT INTO `spintestdb`.`users` (`player_id`, `given_name`, `surname`, `lifetime_spins`, `current_coin_balance`, `total_coins_bet`, `total_coins_won`, `hash_salt_value`, `isDeleted`) VALUES ('2', 'Dawn', 'Efaw', '0', '200', '0', '0', 'STEVEMUCHOW1', '0');
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
