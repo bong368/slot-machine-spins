@@ -93,7 +93,7 @@ function addSpinToDatabase($newData,$showDebug) {
         return $newData;
     }
 
-    // obtaining the data so it can be updated. 
+    // obtaining the data so it can be updated.
     $row = $result->fetch_assoc();
     if ($row===null) {
         $newData['invalid'] = true;
@@ -120,7 +120,7 @@ function addSpinToDatabase($newData,$showDebug) {
         $updates = $updates . "firstSpinDate='$firstSpinDate',";
     }
 
-    // getting ready to refresh the DB with the updated values.    
+    // getting ready to refresh the DB with the updated values.
     $lifetime_spins = $row['lifetime_spins'] + 1;
     $total_coins_won = $row['total_coins_won']+$won;
     $total_coins_bet = $row['total_coins_bet']+$bet;
@@ -143,8 +143,8 @@ function addSpinToDatabase($newData,$showDebug) {
         "current_coin_balance=$current_coin_balance";
 
     $sql =  "UPDATE users ".
-            "SET $updates" .
-            " WHERE player_id=$id ";
+        "SET $updates" .
+        " WHERE player_id=$id ";
     if (mysqli_query($con,$sql)===FALSE) {
         $newData['invalid'] = true;
         array_push($newData['error'],"Query Error update(): " . mysqli_error($con)  .  "  Query " . $sql);
@@ -154,7 +154,8 @@ function addSpinToDatabase($newData,$showDebug) {
     // all this is prep for the reply. Since we have the DB data, might as well set it up here.
     $newData['name'] = $row['given_name'] . " " . $row['surname'];
     $newData['lifetimeSpins'] = $lifetime_spins;
-    $newData['lifetimeAverageReturn'] = (($total_coins_won>=$total_coins_bet)?number_format($total_coins_won/$total_coins_bet,3):0);
+    //$newData['lifetimeAverageReturn'] = (($total_coins_won>=$total_coins_bet)?number_format($total_coins_won/$total_coins_bet,3):0);
+    $newData['lifetimeAverageReturn'] = number_format($total_coins_won/$total_coins_bet,3);
     $newData['creditBalance'] = $current_coin_balance;
     return $newData;
 }
@@ -171,7 +172,7 @@ function passwordChecksOut($newData,$hashedPwd,$showDebug) {
 }
 
 /**
- * SQL has requirements on how text is used in queries and how it is stored. This method (when active) 
+ * SQL has requirements on how text is used in queries and how it is stored. This method (when active)
  * will ensure that HTML does not cause issues.
  * @param $str
  * @return mixed
@@ -184,7 +185,7 @@ function makeDataSqlHappy($str) {
 /**
  * responsible to unpack the spinData item and parse it to be
  * sure all the parts are with it. To make forms show ALL the issues at once,
- * the reply has an array of errors. 
+ * the reply has an array of errors.
  * looking for
  *      hash,
  *      won,
@@ -352,7 +353,6 @@ function prepareResponse($parsedData) {
     $data['creditBalance'] =$parsedData['creditBalance'];
     return $data;
 }
-
 
 
 
